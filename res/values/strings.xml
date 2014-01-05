@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FetChirp</string>
+    <string name="voice_menu_trigger">get nearby tweets</string>
+    <string name="adjust_fetch_radius">adjust fetch radius</string>
+    <string name="getting_location">getting location</string>
+    <string name="tap_to_change_radius">tap to change radius</string>
+    <string name="swipe_to_set_radius">swipe to set radius</string>
+    <string name="n_miles_radius">%d miles radius</string>
+    <string name="tap_again_to_set">tap again to set</string>
+
+</resources>

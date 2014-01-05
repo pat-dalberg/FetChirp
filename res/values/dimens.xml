@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="four_dp_margin">4dp</dimen>
+    <dimen name="eight_dp_margin">8dp</dimen>
+
+</resources>
