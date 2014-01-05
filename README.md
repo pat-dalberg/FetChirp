@@ -5,7 +5,7 @@ current location. The name is a portmanteaux of 'fetch' and 'chirp'.
 
 #### Usage
 
-Either sideload the prebuilt apk (available here), or build it from this repository and 
+Either sideload the prebuilt apk [available here] (https://drive.google.com/file/d/0B59-w0gvh0SeUml6OWt3N3M2a00/edit?usp=sharing), or build it from this repository and 
 install it as usual. Once the app is installed it is available in the voice menu as 
 'get nearby tweets'. While the location is being retrieved you may interrupt the retrieval
 by tapping on the touchpad and then adjust the radius from which tweets will be retrieved
