@@ -20,8 +20,8 @@ import android.os.Environment;
 
 public class AppConstants {
 
-	public static final String CONSUMER_KEY = "A4S8660ox8Jxzmf47JJNg";
-	public static final String CONSUMER_SECRET = "2iQciltRLUSyo1idoVOnHKXNWk0hWizyJ5XIg8CAXkU";
+	public static final String CONSUMER_KEY = "your consumer key";
+	public static final String CONSUMER_SECRET = "your consumer secret";
 	
 	public static final String FILEPATH = Environment.getExternalStorageDirectory().getPath() + "/FetChirp";
 	
