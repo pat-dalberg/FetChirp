@@ -10,7 +10,7 @@ install it as usual. Once the app is installed it is available in the voice menu
 'get nearby tweets'. While the location is being retrieved you may interrupt the retrieval
 by tapping on the touchpad and then adjust the radius from which tweets will be retrieved
 by swiping forward and back. Tap again when the desired radius is selected to resume
-retrieval with you updated radius. When your location is obtained the progress spinner 
+retrieval with your updated radius. When your location is obtained the progress spinner 
 will be replaced by a set of cards containing recent nearby tweets. Slide to view the 
 cards, and swipe down to exit the app.
 
