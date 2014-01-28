@@ -7,12 +7,15 @@ current location. The name is a portmanteaux of 'fetch' and 'chirp'.
 
 Either sideload the prebuilt apk [available here] (https://drive.google.com/file/d/0B59-w0gvh0SeUml6OWt3N3M2a00/edit?usp=sharing), or build it from this repository and 
 install it as usual. Once the app is installed it is available in the voice menu as 
-'get nearby tweets'. While the location is being retrieved you may interrupt the retrieval
-by tapping on the touchpad and then adjust the radius from which tweets will be retrieved
-by swiping forward and back. Tap again when the desired radius is selected to resume
-retrieval with your updated radius. When your location is obtained the progress spinner 
-will be replaced by a set of cards containing recent nearby tweets. Slide to view the 
-cards, and swipe down to exit the app.
+'get nearby tweets'. The app goes to a settings screen. Tap once to use the default 
+parameters (5 mile radius, 30 tweets returned), or tap with two fingers to go into the 
+settings menu. In the settings menu select either 'change radius' or 'change count', and 
+then swipe on the touchpad to adjust. Tap to set the parameter, and tap again to begin 
+searching. As you are scrolling through tweets you can tap on an individual tweet to bring 
+up menu to bring up the authors twitter profile, profiles of other twitter users mentioned
+in the tweet, search on hashtatgs in the tweet, and browse to URLs mentioned in the tweet.
+Swipe down to exit the app.
+
 
 #### Building
 

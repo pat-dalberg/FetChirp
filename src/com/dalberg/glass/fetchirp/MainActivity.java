@@ -20,47 +20,36 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.dalberg.glass.fetchirp.adapter.TweetCardsAdapter;
-import com.dalberg.glass.fetchirp.async.ProfileImageLoader;
-import com.dalberg.glass.fetchirp.model.Tweet;
-import com.dalberg.glass.fetchirp.model.Tweets;
-import com.dalberg.glass.fetchirp.utility.AppConstants;
+import com.dalberg.glass.fetchirp.async.CredentialLoader;
+import com.dalberg.glass.fetchirp.async.NearbyTweetsLoader;
 import com.dalberg.glass.fetchirp.utility.FileUtilities;
-import com.dalberg.glass.fetchirp.utility.GeoTweetHelper;
 import com.dalberg.glass.fetchirp.utility.StringUtilities;
-import com.dalberg.glass.vitrumloc.R;
-import com.google.android.glass.app.Card;
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
-import com.google.android.glass.widget.CardScrollView;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.Future;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
 
 public class MainActivity extends Activity implements LocationListener{
 	
 	private static final String TAG = "MainActivity";
 	
 	private LocationManager mLocationManager;
-	private TextView tvGettingLocation, tvTapToChange, tvTapToSet, tvMilesRadius, tvSwipeToSet;
+	private TextView tvGettingLocation;
 	private ProgressBar pbWait;
-	
-	private boolean isSettingRadius = false;
 	
 	private String mAccessToken;
 	
@@ -68,15 +57,25 @@ public class MainActivity extends Activity implements LocationListener{
 	
 	private Future<JsonObject> loading;
 	
-	private ArrayList<Card> mCards;
-	
-	private ProfileImageLoader profileImageLoader;
-	
 	private FileUtilities fileUtilities;
 	
 	private GestureDetector mGestureDetector;
 	
 	private Resources res;
+	
+	private CredentialLoader mCredentialLoader;
+	
+	private NearbyTweetsLoader mNearbyTweetsLoader;
+	
+	private String mProfileImagePath;
+	
+	private ArrayList<String> mMentions, mHashtags, mUrls = new ArrayList<String>();
+	
+	private static final int MENU_PROFILE_GROUP = 1;
+	private static final int MENU_HASHTAG_GROUP = 2;
+	private static final int MENU_URL_GROUP = 3;
+	private static final int AUTHOR = 1;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +93,75 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 	
 
+	
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu){
+		if(mMentions == null && mHashtags == null && mUrls == null){
+			return true;
+		}
+		menu.clear();			
+		if(mMentions.size() > 0){
+			int order = 1;
+			for(String mention : mMentions){
+				if(order == 1){
+					menu.add(MENU_PROFILE_GROUP, AUTHOR, Menu.NONE,res.getString(R.string.view_profile, StringUtilities.attifyScreenname(mention)));
+				}else{
+					menu.add(MENU_PROFILE_GROUP, Menu.NONE, Menu.NONE,res.getString(R.string.view_profile, StringUtilities.attifyScreenname(mention)));
+				}
+				order++;
+			}
+		}
+		if(mHashtags.size() > 0){
+			for(String hashtag : mHashtags){
+				menu.add(MENU_HASHTAG_GROUP, Menu.NONE, Menu.NONE,res.getString(R.string.search_hashtag, hashtag));
+			}
+		}
+		if(mUrls.size() > 0){
+			for(String url : mUrls){
+				menu.add(MENU_URL_GROUP, Menu.NONE, Menu.NONE,res.getString(R.string.view_website, url));
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getGroupId()){
+			case MENU_PROFILE_GROUP:
+				Intent intent = new Intent(getApplicationContext(), ProfileCardActivity.class);
+				if(item.getItemId() == AUTHOR){
+					intent.putExtra("isauthor", true);
+				}else{
+					intent.putExtra("isauthor", false);
+				}
+				intent.putExtra("accesstoken", mAccessToken);
+				intent.putExtra("screenname", StringUtilities.deAttifyMention(item.getTitle().toString()));
+				intent.putExtra("profileimagepath", mProfileImagePath);
+				startActivity(intent);
+				break;
+			case MENU_HASHTAG_GROUP:
+				Intent htIntent = new Intent(this, HashtagActivity.class);
+				htIntent.putExtra("accesstoken", mAccessToken);
+				htIntent.putExtra("hashtag", item.getTitle().toString());
+				startActivity(htIntent);
+				break;
+			case MENU_URL_GROUP:
+				browseUrl(item.getTitle().toString());
+				break;
+		}		
+		return true;
+	}
+	
+
 	@Override
 	public void onLocationChanged(Location location) {
-		mLocation = location;
-		loadNearbyTweets();
+		if(location != null){
+			mNearbyTweetsLoader = new NearbyTweetsLoader(this, mAccessToken, loading, location, pbWait, tvGettingLocation);
+			mNearbyTweetsLoader.setAccessToken(mCredentialLoader.getAccessToken());
+			mNearbyTweetsLoader.loadNearbyTweets();
+		}
 		
 	}
 
@@ -133,9 +197,10 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 
 	private void initOps(){
+		// TODO remove for production build
+		//android.os.Debug.waitForDebugger();
 		res = this.getResources();
 		mGestureDetector = createGestureDetector(this);
-		profileImageLoader = new ProfileImageLoader(this);
 		fileUtilities = new FileUtilities();
 		fileUtilities.makeDir();
 		fileUtilities.wipeFiles();
@@ -145,16 +210,19 @@ public class MainActivity extends Activity implements LocationListener{
 		String provider = mLocationManager.getBestProvider(criteria, true);
 		mLocationManager.requestLocationUpdates(provider, 3000, 1000, this);
 		mLocation = mLocationManager.getLastKnownLocation(provider);
-		getCredentials();
+		mCredentialLoader = new CredentialLoader(getApplicationContext());
+		mCredentialLoader.getCredentials();
+		mAccessToken = mCredentialLoader.getAccessToken();
+		if(mLocation != null){
+			mNearbyTweetsLoader = new NearbyTweetsLoader(this, mAccessToken, loading, mLocation, pbWait, tvGettingLocation);
+			mNearbyTweetsLoader.setAccessToken(mCredentialLoader.getAccessToken());
+			mNearbyTweetsLoader.loadNearbyTweets();
+		}
 	}
 	
 	private void initUi(){
 		tvGettingLocation = (TextView)findViewById(R.id.tvGettingLocation);
-		tvTapToChange = (TextView)findViewById(R.id.tvTapToChange);
 		pbWait = (ProgressBar)findViewById(R.id.pbWait);
-		tvTapToSet = (TextView)findViewById(R.id.tvTapToSet); 
-		tvMilesRadius = (TextView)findViewById(R.id.tvMilesRadius);
-		tvSwipeToSet = (TextView)findViewById(R.id.tvSwipeToSet);
 	}
 	
 	private GestureDetector createGestureDetector(Context context){
@@ -164,153 +232,29 @@ public class MainActivity extends Activity implements LocationListener{
 			@Override
 			public boolean onGesture(Gesture gesture) {
 				if(gesture == Gesture.TAP){
-					toggleSettingRadius();
-					if(isSettingRadius){
-						if(loading != null){
-							loading.cancel(true);
-						}
-						setRadiusVisibility(true);
-						setWaitVisibility(false);
-						setRadiusMiles(GeoTweetHelper.getFetchRadius());
-						
-					}else{
-						setRadiusVisibility(false);
-						setWaitVisibility(true);
-						loadNearbyTweets();
-					}
-					
-					
-					return true;
-				}else if(gesture == Gesture.SWIPE_LEFT){
-					//backward swipe ++
-					int radius = GeoTweetHelper.getFetchRadius();
-					radius++;
-					setRadiusMiles(radius);
-					GeoTweetHelper.setFetchRadius(radius);
-					return true;
-				}else if(gesture == Gesture.SWIPE_RIGHT){
-					//forward swipe --
-					int radius = GeoTweetHelper.getFetchRadius();
-					if(radius > 1){
-						radius--;
-					}else{
-						radius = 1;
-					}
-					setRadiusMiles(radius);
-					GeoTweetHelper.setFetchRadius(radius);
+					openOptionsMenu();																
 					return true;
 				}
-				
+		
 				return false;
 			}
-		});
-		
-		
-		
+		});		
 		return gestureDetector;
 	}
-	
-	private void setWaitVisibility(boolean visibility){
-		if(visibility){
-			pbWait.setVisibility(View.VISIBLE);
-			tvGettingLocation.setVisibility(View.VISIBLE);
-			tvTapToChange.setVisibility(View.VISIBLE);
-		}else{
-			pbWait.setVisibility(View.INVISIBLE);
-			tvGettingLocation.setVisibility(View.INVISIBLE);
-			tvTapToChange.setVisibility(View.INVISIBLE);
-		}
-	}
-	
-	private void setRadiusVisibility(boolean isVis){
-		if(isVis){
-			tvTapToSet.setVisibility(View.VISIBLE);
-			tvMilesRadius.setVisibility(View.VISIBLE);
-			tvSwipeToSet.setVisibility(View.VISIBLE);
-		}else{
-			tvTapToSet.setVisibility(View.INVISIBLE);
-			tvMilesRadius.setVisibility(View.INVISIBLE);
-			tvSwipeToSet.setVisibility(View.INVISIBLE);
-		}
-	}
-	
-	private void setRadiusMiles(int miles){
-		tvMilesRadius.setText(res.getString(R.string.n_miles_radius, miles));
-	}
-	
-	private void toggleSettingRadius(){
-		if(isSettingRadius){
-			isSettingRadius = false;
-		}else{
-			isSettingRadius = true;
-		}
-	}
-	
-	private void getCredentials() {
-        Ion.with(this, "https://api.twitter.com/oauth2/token")
-        .basicAuthentication(AppConstants.CONSUMER_KEY, AppConstants.CONSUMER_SECRET)
-        .setBodyParameter("grant_type", "client_credentials")
-        .asJsonObject()
-        .setCallback(new FutureCallback<JsonObject>() {
-            @Override
-            public void onCompleted(Exception e, JsonObject result) {
-                if (e != null) {
-                	setWaitVisibility(false);
-                    Toast.makeText(MainActivity.this, "Error loading tweets", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                mAccessToken = result.get("access_token").getAsString();
-                
-            }
-        });
-    }
-	
-	private void loadNearbyTweets(){
-		if (loading != null && !loading.isDone() && !loading.isCancelled() )
-            return;
-		String url = GeoTweetHelper.searchUrl(mLocation);		
-		loading = Ion.with(this, url)
-		        .setHeader("Authorization", "Bearer " + mAccessToken)
-		        .asJsonObject()
-		        .setCallback(new FutureCallback<JsonObject>(){
-		            @Override
-		            public void onCompleted(Exception e, JsonObject result) {
-		                if (e != null) {
-		                    Toast.makeText(MainActivity.this, "Error loading tweets", Toast.LENGTH_LONG).show();
-		                    return;
-		                }
-		                setWaitVisibility(false);
-		                if(isSettingRadius){
-		                	return;
-		                }
-		                createCards(result);
-		            }
-		        });
 		
-		
+	public void setTweetMenu(ArrayList<String> mentions, ArrayList<String> hashtags, ArrayList<String> urls){
+		mMentions = mentions;
+		mHashtags = hashtags;
+		mUrls = urls;
 	}
 	
-	private void createCards(JsonObject jsonObject){
-		Log.i(TAG, jsonObject.toString());
-		mCards = new ArrayList<Card>();
-		Gson gson = new Gson();
-		Tweets tweets = gson.fromJson(jsonObject, Tweets.class); 
-		for(Tweet tweet : tweets.statuses){
-			Card card = new Card(this);
-			card.setImageLayout(Card.ImageLayout.LEFT);
-			card.setText(tweet.text);
-			String footer = StringUtilities.formatFooter(tweet.user.screen_name, tweet.user.name, tweet.created_at);
-			card.setFootnote(footer);
-			String profileUrl = tweet.user.profile_image_url.replace("_normal", "");
-			profileImageLoader.getProfileImage(profileUrl, card);
-			mCards.add(card);
-						
-		}
-		CardScrollView cardScrollView = new CardScrollView(this);
-		TweetCardsAdapter adapter = new TweetCardsAdapter(mCards);
-		cardScrollView.setAdapter(adapter);
-		cardScrollView.activate();
-		setContentView(cardScrollView);
+	public void setProfileImagePath(String path){
+		mProfileImagePath = path;
+	}
+	
+	private void browseUrl(String url){
+		Uri uri = Uri.parse(StringUtilities.extractUrl(url));		
+		startActivity(new Intent(Intent.ACTION_VIEW, uri));
 	}
 	
 }

@@ -17,27 +17,33 @@
  */
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rlMain"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity" >
-
-    <ProgressBar
-        android:id="@+id/pbWait"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+    android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/tvGettingLocation"
+        android:id="@+id/tvInstructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/pbWait"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/eight_dp_margin"
-        android:text="@string/getting_location" />
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="@string/settings_instructions" />
+
+    <TextView
+        android:id="@+id/tvChangedCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tvChangedInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvChangedCount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/four_dp_margin"
+        android:visibility="invisible" />
 
 </RelativeLayout>

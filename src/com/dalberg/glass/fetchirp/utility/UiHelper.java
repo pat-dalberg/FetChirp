@@ -16,44 +16,31 @@
 
 package com.dalberg.glass.fetchirp.utility;
 
-import java.io.File;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-
-public class FileUtilities {
+public class UiHelper {
 	
-	private File mFile;
+	private ProgressBar pbWait;
+	private TextView tvGettingLocation;
 
-	public FileUtilities() {
-		mFile = new File(AppConstants.FILEPATH);
+	public UiHelper(ProgressBar pb, TextView tvLocation) {
+		pbWait = pb;
+		tvGettingLocation = tvLocation;
 	}
 	
 	
-	public boolean makeDir(){ 		
-		return mFile.mkdir();
-	}
-	
-	public String getFilename(String url){
-		String filename = url.substring(url.lastIndexOf("/") + 1);
-		return filename;
-	}
-	
-	public void wipeFiles(){		
-		for(File file : mFile.listFiles()){
-			file.delete();
+	public void setWaitVisibility(boolean visibility){
+		if(visibility){
+			pbWait.setVisibility(View.VISIBLE);
+			tvGettingLocation.setVisibility(View.VISIBLE);
+
+		}else{
+			pbWait.setVisibility(View.INVISIBLE);
+			tvGettingLocation.setVisibility(View.INVISIBLE);
 		}
 	}
 	
-	public File getFileByName(String name){
-		File files[] = mFile.listFiles();
-		for(File file : files){
-			if(name.contentEquals(file.getName())){
-				return file;
-			}
-		}
-		return null;
-	}
-
-
-
 
 }

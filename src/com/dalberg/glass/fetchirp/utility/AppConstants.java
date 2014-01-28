@@ -20,10 +20,21 @@ import android.os.Environment;
 
 public class AppConstants {
 
-	public static final String CONSUMER_KEY = "your consumer key";
-	public static final String CONSUMER_SECRET = "your consumer secret";
+//	public static final String CONSUMER_KEY = "your consumer key";
+//	public static final String CONSUMER_SECRET = "your consumer secret";
+	
+	public static final String CONSUMER_KEY = "A4S8660ox8Jxzmf47JJNg";
+	public static final String CONSUMER_SECRET = "2iQciltRLUSyo1idoVOnHKXNWk0hWizyJ5XIg8CAXkU";
 	
 	public static final String FILEPATH = Environment.getExternalStorageDirectory().getPath() + "/FetChirp";
+	
+	public static final String CREDENTIALS_ERROR_MSG = "error getting credentials";
+	public static final String TWEETS_ERROR_MSG = "error getting tweets";
+	public static final String PROFILE_ERROR_MSG = "error getting profile";
+	
+	public static final String PREFS = "com.dalberg.glass.fetchirp";
+	public static final String PREFS_COUNT_KEY = "com.dalberg.glass.fetchirp.count";
+	public static final String PREFS_RADIUS_KEY = "com.dalberg.glass.fetchirp.radius";
 	
 
 }

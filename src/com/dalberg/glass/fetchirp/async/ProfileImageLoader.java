@@ -17,10 +17,10 @@
 package com.dalberg.glass.fetchirp.async;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.dalberg.glass.fetchirp.utility.AppConstants;
 import com.dalberg.glass.fetchirp.utility.FileUtilities;
@@ -31,15 +31,12 @@ import com.koushikdutta.ion.Ion;
 public class ProfileImageLoader {
 	
 	private Context mContext;
-	
-	private ArrayList<File> mFiles;
-	
+		
 	private FileUtilities fileUtilities; 
 
 	public ProfileImageLoader(Context context) {
 		mContext = context;
 		fileUtilities = new FileUtilities();
-		mFiles = new ArrayList<File>();
 	}
 	
 	public void getProfileImage(String url, final Card card){
@@ -51,18 +48,15 @@ public class ProfileImageLoader {
 			public void onCompleted(Exception e, File file){
 				if(e != null){
 					e.printStackTrace();
+					Log.e("ProfileImageLoader", e.getMessage());
 				}else{
-					mFiles.add(file);
+					card.clearImages();
 					card.addImage(Uri.fromFile(file));
 					
 				}
 			}
 		});
 				
-	}
-	
-	public ArrayList<File> getImages(){
-		return mFiles;
 	}
 
 }

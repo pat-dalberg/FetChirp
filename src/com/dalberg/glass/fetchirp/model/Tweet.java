@@ -21,5 +21,6 @@ public class Tweet {
 	public String text;
 	public String created_at;
 	public User user;
+	public Entities entities;
 
 }

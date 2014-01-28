@@ -16,36 +16,54 @@
 
 package com.dalberg.glass.fetchirp.utility;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import android.location.Location;
 
 public class GeoTweetHelper {
 	
 	private static final String BASE_URL = "https://api.twitter.com/1.1/search/tweets.json?"; 
 	
+	public static final String OAUTH_URL = "https://api.twitter.com/oauth2/token";
+	
+	private static final String PROFILE_URL = "https://api.twitter.com/1.1/users/show.json?screen_name=";
+	
 	private static String mRadius = "%dmi";
-	private static int mFetchRadius = 5;
 
 	public GeoTweetHelper() {
 		
 	}
 	
-	public static void setFetchRadius(int radius){
-		mFetchRadius = radius;
-	}
-	
-	public static int getFetchRadius(){
-		return mFetchRadius;
-	}
-	
-	public static String searchUrl(Location location){
-		String near = String.format(mRadius, mFetchRadius);
-		StringBuffer url = new StringBuffer();
+	public static String searchUrl(Location location, int radius, int count){
+		String near = String.format(mRadius, radius);
+		StringBuilder url = new StringBuilder();
 		url.append(BASE_URL);
 		url.append("q=&");
-		String geo = String.format("geocode=%f,%f,%s", location.getLatitude(),location.getLongitude(),near);
-		url.append(geo);
-		url.append("&result_type=recent");		
+		url.append(String.format("geocode=%f,%f,%s", location.getLatitude(),location.getLongitude(),near));
+		url.append(String.format("&result_type=recent&count=%d", count));		
 		return url.toString();
+	}
+	
+	public static String searchHashtagUrl(String hashtag, int count){
+		String ht = null;
+		try {
+			ht = URLEncoder.encode(hashtag.substring(hashtag.indexOf("#") + 1), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		StringBuilder url = new StringBuilder()
+		.append(BASE_URL)
+		.append("q=")
+		.append(ht)
+		.append(String.format("&result_type=recent&count=%d", count));
+		return url.toString();
+	}
+	
+	public static String profileUrl(String screenname){
+		StringBuilder profile = new StringBuilder(PROFILE_URL)
+		.append(screenname);
+		return profile.toString();
 	}
 
 }

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 
 /*
  * Copyright (C) 2014 Pat Dalberg 
  *
@@ -15,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- -->
-<resources>
 
-    <dimen name="four_dp_margin">4dp</dimen>
-    <dimen name="eight_dp_margin">8dp</dimen>
+package com.dalberg.glass.fetchirp.model;
 
-</resources>
+public class UserMention {
+	
+	public String name;
+	public String screen_name;
+	public String id_str;
+	
+}

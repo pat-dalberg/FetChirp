@@ -21,18 +21,18 @@ import java.util.ArrayList;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.glass.app.Card;
+import com.dalberg.glass.fetchirp.model.TweetCard;
 import com.google.android.glass.widget.CardScrollAdapter;
 
 public class TweetCardsAdapter extends CardScrollAdapter {
 
-	private ArrayList<Card> mCards;
+	private ArrayList<TweetCard> mCards;
 	
 	public TweetCardsAdapter() {
 
 	}
 	
-	public TweetCardsAdapter(ArrayList<Card> cards){
+	public TweetCardsAdapter(ArrayList<TweetCard> cards){
 		mCards = cards;
 	}
 
@@ -58,7 +58,9 @@ public class TweetCardsAdapter extends CardScrollAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		return mCards.get(position).toView();
+		return mCards.get(position).card.toView();
 	}
 
+	
+	
 }

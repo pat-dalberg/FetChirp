@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*
+ * Copyright (C) 2014 Pat Dalberg 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ -->
 <resources>
 
     <string name="app_name">FetChirp</string>
     <string name="voice_menu_trigger">get nearby tweets</string>
     <string name="adjust_fetch_radius">adjust fetch radius</string>
     <string name="getting_location">getting location</string>
-    <string name="tap_to_change_radius">tap to change radius</string>
+    <string name="tap_to_change_radius">tap to change radius or tweets count</string>
     <string name="swipe_to_set_radius">swipe to set radius</string>
+    <string name="swipe_to_set_tweets_count">swipe to set tweets count</string>
+    <string name="change_radius">change radius</string>
+    <string name="change_count">change count</string>
     <string name="n_miles_radius">%d miles radius</string>
     <string name="tap_again_to_set">tap again to set</string>
+    <string name="set_count">set count</string>
+    <string name="n_tweets">%d tweets</string>
+    <string name="view_profile">view %s\'s profile</string>
+    <string name="search_hashtag">search #%s</string>
+    <string name="follow_tweep">follow %s</string>
+    <string name="unfollow_tweep">unfollow %s</string>
+    <string name="block_tweep">block %s</string>
+    <string name="view_website">view website %s</string>
+    <string name="loading_profile">loading profile</string>
+    <string name="searching_for_hashtag">searching for hashtag #%s</string>
+    <string name="settings_instructions">tap once to begin \n tap with two fingers for settings</string>
+    <string name="change_count_instructions">swipe to change tweet count \n tap to set</string>
+    <string name="change_radius_instructions">swipe to change search radius \n tap to set</string>
 
 </resources>
