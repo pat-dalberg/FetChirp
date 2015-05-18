@@ -33,12 +33,13 @@ import com.dalberg.glass.fetchirp.model.TweetCard;
 import com.dalberg.glass.fetchirp.model.Tweets;
 import com.dalberg.glass.fetchirp.model.Url;
 import com.dalberg.glass.fetchirp.model.UserMention;
-import com.google.android.glass.app.Card;
+//import com.google.android.glass.app.Card;
+import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class CardBuilder {
+public class TweetCardBuilder {
 	
 	private static final String TAG = "CardBuilder";
 
@@ -56,13 +57,13 @@ public class CardBuilder {
 	
 	private FileUtilities mFileUtilities;
 	
-	public CardBuilder(MainActivity ma) {
+	public TweetCardBuilder(MainActivity ma) {
 		mainActivity = ma;
 		mProfileImageLoader = new ProfileImageLoader(mainActivity);
 		mFileUtilities = new FileUtilities();
 	}
 	
-	public CardBuilder(HashtagActivity ha) {
+	public TweetCardBuilder(HashtagActivity ha) {
 		hashtagActivity = ha;
 		mProfileImageLoader = new ProfileImageLoader(hashtagActivity);
 		mFileUtilities = new FileUtilities();
