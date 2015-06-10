@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.dalberg.glass.fetchirp.HashtagActivity;
 import com.dalberg.glass.fetchirp.utility.AppConstants;
-import com.dalberg.glass.fetchirp.utility.CardBuilder;
+import com.dalberg.glass.fetchirp.utility.TweetCardBuilder;
 import com.dalberg.glass.fetchirp.utility.GeoTweetHelper;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
@@ -32,20 +32,21 @@ public class HashtagLoader {
 	
 	private Context mContext;
 	private String mAccessToken;
-	private CardBuilder cardBuilder;
+	private TweetCardBuilder cardBuilder;
 	private int mCount;
 
 	public HashtagLoader(HashtagActivity hashtagActivity, String accessToken) {
 		mContext = hashtagActivity;
 		mAccessToken = accessToken;
-		cardBuilder = new CardBuilder(hashtagActivity);
+		cardBuilder = new TweetCardBuilder(hashtagActivity);
 		SharedPreferences prefs = hashtagActivity.getSharedPreferences(AppConstants.PREFS, Context.MODE_PRIVATE);
 		mCount = prefs.getInt(AppConstants.PREFS_COUNT_KEY, 30);
 	}
 	
 	public void loadHashtagTweets(String hashtag){
 		String url = GeoTweetHelper.searchHashtagUrl(hashtag, mCount);
-		Ion.with(mContext, url)
+		Ion.with(mContext)
+		.load(url)
 		.setHeader("Authorization", "Bearer " + mAccessToken)
 		.asJsonObject()
 		.setCallback(new FutureCallback<JsonObject>(){

@@ -19,17 +19,22 @@ package com.dalberg.glass.fetchirp.async;
 import java.io.File;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
 import com.dalberg.glass.fetchirp.utility.AppConstants;
 import com.dalberg.glass.fetchirp.utility.FileUtilities;
 import com.google.android.glass.app.Card;
+import com.google.android.glass.widget.CardBuilder;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import java.util.concurrent.Future;
+
 public class ProfileImageLoader {
-	
+
 	private Context mContext;
 		
 	private FileUtilities fileUtilities; 
@@ -39,9 +44,10 @@ public class ProfileImageLoader {
 		fileUtilities = new FileUtilities();
 	}
 	
-	public void getProfileImage(String url, final Card card){
-		String filename = AppConstants.FILEPATH + "/" + fileUtilities.getFilename(url);
-		Ion.with(mContext, url)
+	public void getProfileImage(String url, final CardBuilder card) {
+		final String filename = AppConstants.FILEPATH + "/" + fileUtilities.getFilename(url);
+		Future<File> file = Ion.with(mContext)
+        .load(url)
 		.write(new File(filename))
 		.setCallback(new FutureCallback<File>() {
 			@Override
@@ -51,12 +57,12 @@ public class ProfileImageLoader {
 					Log.e("ProfileImageLoader", e.getMessage());
 				}else{
 					card.clearImages();
-					card.addImage(Uri.fromFile(file));
-					
+                    Bitmap bitmap = BitmapFactory.decodeFile(filename);
+					card.addImage(bitmap);
 				}
 			}
 		});
-				
+
 	}
 
 }

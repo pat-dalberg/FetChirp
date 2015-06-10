@@ -47,7 +47,7 @@ public class ProfileCardBuilder {
 		if(isAuthor){
 			String filename = mFileUtilities.getFilename(picpath);
 			File pic = mFileUtilities.getFileByName(filename);
-			card.addImage(Uri.fromFile(pic));
+//			card.addImage(Uri.fromFile(pic));
 		}else{
 			card.addImage(R.drawable.profile_default);
 			String profileUrl = userProfile.profile_image_url.replace("_normal", "");

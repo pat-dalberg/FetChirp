@@ -43,7 +43,8 @@ public class UserProfileLoader {
 		String url = GeoTweetHelper.profileUrl(screenname);
 		UserProfile userProfile = null;
 		try {
-			userProfile = Ion.with(mContext, url)
+			userProfile = Ion.with(mContext)
+			.load(url)
 			.setHeader("Authorization", "Bearer " + mAccessToken)
 			.as(new TypeToken<UserProfile>(){})				
 			.get();			

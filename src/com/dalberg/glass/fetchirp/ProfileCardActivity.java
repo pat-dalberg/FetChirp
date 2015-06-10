@@ -84,7 +84,7 @@ public class ProfileCardActivity extends Activity {
 		if(userProfile != null){
 			mUiHelper.setWaitVisibility(false);
 			Card card = mProfileCardBuilder.buildCard(mPicpath, userProfile, mIsAuthor);
-			setContentView(card.toView());
+			setContentView(card.getView());
 		}
 	}
 

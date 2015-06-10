@@ -46,6 +46,8 @@ import com.koushikdutta.async.future.Future;
 public class MainActivity extends Activity implements LocationListener{
 	
 	private static final String TAG = "MainActivity";
+
+	private Context mContext;
 	
 	private LocationManager mLocationManager;
 	private TextView tvGettingLocation;
@@ -80,6 +82,7 @@ public class MainActivity extends Activity implements LocationListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mContext = MainActivity.this;
 		setContentView(R.layout.activity_main);
 		init();
 	}
@@ -158,7 +161,7 @@ public class MainActivity extends Activity implements LocationListener{
 	@Override
 	public void onLocationChanged(Location location) {
 		if(location != null){
-			mNearbyTweetsLoader = new NearbyTweetsLoader(this, mAccessToken, loading, location, pbWait, tvGettingLocation);
+			mNearbyTweetsLoader = new NearbyTweetsLoader(mContext, this, mAccessToken, loading, location, pbWait, tvGettingLocation);
 			mNearbyTweetsLoader.setAccessToken(mCredentialLoader.getAccessToken());
 			mNearbyTweetsLoader.loadNearbyTweets();
 		}
@@ -210,11 +213,11 @@ public class MainActivity extends Activity implements LocationListener{
 		String provider = mLocationManager.getBestProvider(criteria, true);
 		mLocationManager.requestLocationUpdates(provider, 3000, 1000, this);
 		mLocation = mLocationManager.getLastKnownLocation(provider);
-		mCredentialLoader = new CredentialLoader(getApplicationContext());
+		mCredentialLoader = new CredentialLoader(this);
 		mCredentialLoader.getCredentials();
 		mAccessToken = mCredentialLoader.getAccessToken();
 		if(mLocation != null){
-			mNearbyTweetsLoader = new NearbyTweetsLoader(this, mAccessToken, loading, mLocation, pbWait, tvGettingLocation);
+			mNearbyTweetsLoader = new NearbyTweetsLoader(mContext, this, mAccessToken, loading, mLocation, pbWait, tvGettingLocation);
 			mNearbyTweetsLoader.setAccessToken(mCredentialLoader.getAccessToken());
 			mNearbyTweetsLoader.loadNearbyTweets();
 		}

@@ -22,29 +22,30 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dalberg.glass.fetchirp.model.TweetCard;
+import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 
 public class TweetCardsAdapter extends CardScrollAdapter {
 
-	private ArrayList<TweetCard> mCards;
+	private ArrayList<CardBuilder> mCards;
 	
 	public TweetCardsAdapter() {
 
 	}
 	
-	public TweetCardsAdapter(ArrayList<TweetCard> cards){
+	public TweetCardsAdapter(ArrayList<CardBuilder> cards){
 		mCards = cards;
 	}
 
-	@Override
-	public int findIdPosition(Object id) {		
-		return -1;
-	}
-
-	@Override
-	public int findItemPosition(Object item) {
-		return mCards.indexOf(item);
-	}
+//	@Override
+//	public int findIdPosition(Object id) {
+//		return -1;
+//	}
+//
+//	@Override
+//	public int findItemPosition(Object item) {
+//		return mCards.indexOf(item);
+//	}
 
 	@Override
 	public int getCount() {
@@ -58,9 +59,12 @@ public class TweetCardsAdapter extends CardScrollAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		return mCards.get(position).card.toView();
+		return mCards.get(position).getView();
 	}
 
-	
+	@Override
+	public int getPosition(Object item) {
+		return mCards.indexOf(item);
+	}
 	
 }

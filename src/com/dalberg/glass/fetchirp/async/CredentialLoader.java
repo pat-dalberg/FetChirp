@@ -20,10 +20,12 @@ import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.dalberg.glass.fetchirp.utility.AppConstants;
 import com.dalberg.glass.fetchirp.utility.GeoTweetHelper;
 import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 public class CredentialLoader {
@@ -40,27 +42,20 @@ public class CredentialLoader {
 
 	
 	public void getCredentials() {
-        JsonObject result;
-		try {
-			result = Ion.with(mContext, GeoTweetHelper.OAUTH_URL)
+			Ion.with(mContext)
+			.load(GeoTweetHelper.OAUTH_URL)
 			.basicAuthentication(AppConstants.CONSUMER_KEY, AppConstants.CONSUMER_SECRET)
 			.setBodyParameter("grant_type", "client_credentials")
 			.asJsonObject()
-			.get();
-			mAccessToken = result.get("access_token").getAsString();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext, AppConstants.CREDENTIALS_ERROR_MSG, Toast.LENGTH_SHORT).show();
-			//mUiHelper.setWaitVisibility(false);
-			return;
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext, AppConstants.CREDENTIALS_ERROR_MSG, Toast.LENGTH_SHORT).show();
-			//mUiHelper.setWaitVisibility(false);
-			return;
-		}
-        
-
+			.setCallback(new FutureCallback<JsonObject>() {
+				@Override
+				public void onCompleted(Exception e, JsonObject result) {
+					if (e != null) {
+						Toast.makeText(mContext, AppConstants.CREDENTIALS_ERROR_MSG, Toast.LENGTH_SHORT).show();
+					}
+					mAccessToken = result.get("access_token").getAsString();
+				}
+			});
     }
 	
 	

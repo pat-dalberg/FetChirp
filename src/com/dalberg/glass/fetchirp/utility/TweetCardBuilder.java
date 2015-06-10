@@ -47,7 +47,7 @@ public class TweetCardBuilder {
 	
 	private HashtagActivity hashtagActivity = null;
 	
-	private ArrayList<TweetCard> mCards;
+	private ArrayList<CardBuilder> mCards;
 	
 	private ProfileImageLoader mProfileImageLoader;
 	
@@ -71,24 +71,34 @@ public class TweetCardBuilder {
 
 	
 	public void createCards(JsonObject jsonObject){
-		mCards = new ArrayList<TweetCard>();
+		mCards = new ArrayList<CardBuilder>();
 		Gson gson = new Gson();
 		tweets = gson.fromJson(jsonObject, Tweets.class); 
 		for(Tweet tweet : tweets.statuses){
-			Card card;
-			if(mainActivity != null){
-				card = new Card(mainActivity);
-			}else{
-				card = new Card(hashtagActivity);
-			}
-			card.setImageLayout(Card.ImageLayout.LEFT);
-			card.setText(tweet.text);
-			card.addImage(R.drawable.profile_default);
+			CardBuilder card;
 			String footer = StringUtilities.formatFooter(tweet.user.screen_name, tweet.user.name, tweet.created_at);
-			card.setFootnote(footer);
 			String profileUrl = tweet.user.profile_image_url.replace("_normal", "");
-			mProfileImageLoader.getProfileImage(profileUrl, card);
-			mCards.add(new TweetCard(tweet,card));
+			if(mainActivity != null){
+				card = new CardBuilder(mainActivity.getApplicationContext(), CardBuilder.Layout.COLUMNS)
+				.setText(tweet.text)
+				.addImage(R.drawable.profile_default)
+				.setFootnote(footer);
+				mProfileImageLoader.getProfileImage(profileUrl, card);
+
+			}else{
+				card = new CardBuilder(hashtagActivity.getApplicationContext(), CardBuilder.Layout.COLUMNS)
+				.setText(tweet.text)
+				.addImage(R.drawable.profile_default)
+				.setFootnote(footer);
+				mProfileImageLoader.getProfileImage(profileUrl, card);
+			}
+			//card.setImageLayout(Card.ImageLayout.LEFT);
+//			card.setText(tweet.text);
+//			card.addImage(R.drawable.profile_default);
+//			card.setFootnote(footer);
+//
+//			mProfileImageLoader.getProfileImage(profileUrl, card);
+			mCards.add(card);
 						
 		}
 		if(mainActivity != null){
@@ -99,7 +109,7 @@ public class TweetCardBuilder {
 		TweetCardsAdapter adapter = new TweetCardsAdapter(mCards);
 		mCardScrollView.setAdapter(adapter);
 		mCardScrollView.activate();
-		mCardScrollView.setOnItemClickListener(tapListener);
+//		mCardScrollView.setOnItemClickListener(tapListener);
 		if(mainActivity != null){
 			mainActivity.setContentView(mCardScrollView);
 		}else{
@@ -108,46 +118,46 @@ public class TweetCardBuilder {
 	}
 	
 	
-	OnItemClickListener tapListener = new OnItemClickListener() {
-
-		@Override
-		public void onItemClick(AdapterView<?> adapter, View view, int position,
-				long id) {
-			Tweet tweet = mCards.get(position).tweet;
-			Card card = mCards.get(position).card;
-			ArrayList<String> mentions = new ArrayList<String>();
-			ArrayList<String> hashtags = new ArrayList<String>();
-			ArrayList<String> urls = new ArrayList<String>();
-			mentions.add(tweet.user.screen_name);
-			for(UserMention mention : tweet.entities.user_mentions){
-				 mentions.add(mention.screen_name);
-			}		
-			for(Hashtag hashtag : tweet.entities.hashtags){
-				hashtags.add(hashtag.text);
-			}
-			for(Url url : tweet.entities.urls){
-				urls.add(url.expanded_url);
-			}
-			if(mainActivity != null){
-				mainActivity.setTweetMenu(mentions, hashtags, urls);
-				String filename = mFileUtilities.getFilename(card.getImage(0).getPath());
-				StringBuilder path = new StringBuilder(AppConstants.FILEPATH)
-				.append("/")
-				.append(filename);
-				mainActivity.setProfileImagePath(path.toString());
-				mainActivity.openOptionsMenu();
-			}else{
-				hashtagActivity.setTweetMenu(mentions, hashtags, urls);
-				String filename = mFileUtilities.getFilename(card.getImage(0).getPath());
-				StringBuilder path = new StringBuilder(AppConstants.FILEPATH)
-				.append("/")
-				.append(filename);
-				hashtagActivity.setProfileImagePath(path.toString());
-				hashtagActivity.openOptionsMenu();
-			}
-			
-		}
-	};
+//	OnItemClickListener tapListener = new OnItemClickListener() {
+//
+//		@Override
+//		public void onItemClick(AdapterView<?> adapter, View view, int position,
+//				long id) {
+//			Tweet tweet = mCards.get(position);
+//			View card = mCards.get(position).getView();
+//			ArrayList<String> mentions = new ArrayList<String>();
+//			ArrayList<String> hashtags = new ArrayList<String>();
+//			ArrayList<String> urls = new ArrayList<String>();
+//			mentions.add(tweet.user.screen_name);
+//			for(UserMention mention : tweet.entities.user_mentions){
+//				 mentions.add(mention.screen_name);
+//			}
+//			for(Hashtag hashtag : tweet.entities.hashtags){
+//				hashtags.add(hashtag.text);
+//			}
+//			for(Url url : tweet.entities.urls){
+//				urls.add(url.expanded_url);
+//			}
+//			if(mainActivity != null){
+//				mainActivity.setTweetMenu(mentions, hashtags, urls);
+//				String filename = mFileUtilities.getFilename(card.getImage(0).getPath());
+//				StringBuilder path = new StringBuilder(AppConstants.FILEPATH)
+//				.append("/")
+//				.append(filename);
+//				mainActivity.setProfileImagePath(path.toString());
+//				mainActivity.openOptionsMenu();
+//			}else{
+//				hashtagActivity.setTweetMenu(mentions, hashtags, urls);
+//				String filename = mFileUtilities.getFilename(card.getImage(0).getPath());
+//				StringBuilder path = new StringBuilder(AppConstants.FILEPATH)
+//				.append("/")
+//				.append(filename);
+//				hashtagActivity.setProfileImagePath(path.toString());
+//				hashtagActivity.openOptionsMenu();
+//			}
+//
+//		}
+//	};
 
 
 }

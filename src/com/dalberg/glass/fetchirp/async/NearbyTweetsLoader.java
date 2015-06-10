@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import com.dalberg.glass.fetchirp.MainActivity;
 import com.dalberg.glass.fetchirp.utility.AppConstants;
-import com.dalberg.glass.fetchirp.utility.CardBuilder;
+import com.dalberg.glass.fetchirp.utility.TweetCardBuilder;
 import com.dalberg.glass.fetchirp.utility.GeoTweetHelper;
 import com.dalberg.glass.fetchirp.utility.UiHelper;
 import com.google.gson.JsonObject;
@@ -42,18 +42,18 @@ public class NearbyTweetsLoader {
 	private boolean isSettingRadius = false;
 	
 	private UiHelper uiHelper;
-	private CardBuilder cardBuilder;
+	private TweetCardBuilder cardBuilder;
 	
 	private int mCount, mRadius;
 
-	public NearbyTweetsLoader(MainActivity mainActivity, String accessToken, Future<JsonObject> loading, Location location, ProgressBar pb,
+	public NearbyTweetsLoader(Context context, MainActivity mainActivity, String accessToken, Future<JsonObject> loading, Location location, ProgressBar pb,
 			TextView tv) {
-		mContext = mainActivity;
+		mContext = context;
 		mAccessToken = accessToken;
 		mLoading = loading;
 		mLocation = location;
 		uiHelper = new UiHelper(pb, tv);
-		cardBuilder = new CardBuilder(mainActivity);
+		cardBuilder = new TweetCardBuilder(mainActivity);
 		SharedPreferences prefs = mainActivity.getSharedPreferences(AppConstants.PREFS, Context.MODE_PRIVATE);
 		mCount = prefs.getInt(AppConstants.PREFS_COUNT_KEY, 30);
 		mRadius = prefs.getInt(AppConstants.PREFS_RADIUS_KEY, 5);
@@ -64,7 +64,8 @@ public class NearbyTweetsLoader {
 		if (mLoading != null && !mLoading.isDone() && !mLoading.isCancelled() )
             return;
 		String url = GeoTweetHelper.searchUrl(mLocation, mRadius, mCount);		
-		mLoading = Ion.with(mContext, url)
+		mLoading = Ion.with(mContext)
+				.load(url)
 		        .setHeader("Authorization", "Bearer " + mAccessToken)
 		        .asJsonObject()
 		        .setCallback(new FutureCallback<JsonObject>(){
